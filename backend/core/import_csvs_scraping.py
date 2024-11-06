@@ -8,12 +8,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fantasy_nba.settings")
 django.setup()
 
-from core.models import Player  # Importando o modelo Player do app 'core'
+from core.models import Player 
 
 # Função para importar os dados
 def import_players():
     # Caminho para o arquivo CSV gerado após o scraping
-    csv_file_path = os.path.join('..', 'scraping', 'dailyleaders.csv')
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    csv_file_path = os.path.join(base_dir, 'scraping', 'dailyleaders.csv')
     
     # Abra o arquivo CSV
     with open(csv_file_path, mode='r', encoding='utf-8') as file:
@@ -22,7 +23,7 @@ def import_players():
         
         for row in reader:
             # Para cada linha no CSV, cria ou atualiza o modelo Player
-            player, created = Player.objects.update_or_create(
+            player, created = Player.objects.create(
                 name=row['Player'],  # A chave 'Player' deve corresponder à coluna no CSV
                 team=row['Tm'],
                 ppg=row['PTS'],

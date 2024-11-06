@@ -5,12 +5,18 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
-from .models import Player, League, Team
+from django.contrib.auth.models import User
+from .models import Player, League, Team, PlayerSelection
+from .serializers import UserSerializer, LeagueSerializer, TeamSerializer, PlayerSerializer, PlayerSelectionSerializer
+from django.utils import timezone
+from datetime import timedelta
 
-# Se for retornar uma resposta simples
+# Home simples
 def home(request):
     return HttpResponse("Bem-vindo à página inicial!")
 
+###################### USERS
+# login / logout / register
 @api_view(['POST', 'GET'])
 def login_view(request):
     if request.method == 'POST':
@@ -40,7 +46,7 @@ def logout_view(request):
 @api_view(['POST'])
 def register(request):
     """
-    View para registrar um novo usuário.
+    View para registar um novo usuário.
     """
     if request.method == 'POST':
         username = request.data.get('username')
@@ -60,21 +66,139 @@ def register(request):
 #    "email": "admin@lcd.pt"
 #}
 
-@api_view(['GET'])
-def list_players(request):
-    players = Player.objects.all()
-    data = [{"player_id": player.player_id, "name": player.name, "team": player.team} for player in players]
-    return Response(data)
-
+##################### LIGAS
+# Criar uma nova liga
 @api_view(['POST'])
-def create_team(request):
-    user = request.user  # Supondo que o usuário esteja autenticado
-    league_id = request.data.get('league_id')
-    team_name = request.data.get('team_name')
-    
+def create_league(request):
+    if request.method == 'POST':
+        serializer = LeagueSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Obter a classificação de uma liga
+@api_view(['GET'])
+def get_league_leaderboard(request, league_id, year, week_number):
     try:
         league = League.objects.get(league_id=league_id)
-        team = Team.objects.create(user=user, league=league, team_name=team_name)
-        return Response({"message": f"Team {team_name} created in league {league.league_name}."}, status=status.HTTP_201_CREATED)
     except League.DoesNotExist:
-        return Response({"error": "League not found."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'League not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    leaderboard = []
+    
+    # Iterar por todas as equipas na liga
+    for team in league.teams.all():
+        team_points = 0
+        
+        # Para cada jogador da equipa, calcular os pontos baseados nos jogos da semana
+        for player_selection in team.player_selections.all():
+            player = player_selection.player
+            # Verifica se o jogo ocorreu na semana solicitada
+            if player.date.isocalendar()[1] == week_number and player.date.year == year:
+                team_points += player.calculate_fantasy_points()
+        
+        leaderboard.append({'team_name': team.team_name, 'points': team_points})
+
+    # Ordena a leaderboard pela pontuação, em ordem decrescente
+    leaderboard = sorted(leaderboard, key=lambda x: x['points'], reverse=True)
+    return Response(leaderboard)
+
+##################### EQUIPAS
+# Criar uma nova equipa
+@api_view(['POST'])
+def create_team(request):
+    if request.method == 'POST':
+        serializer = TeamSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Adicionar jogador à equipa
+@api_view(['POST'])
+def add_player_to_team(request, team_id):
+    try:
+        team = Team.objects.get(team_id=team_id)
+    except Team.DoesNotExist:
+        return Response({'detail': 'Team not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Verifica o prazo de 24 horas para adição de jogador à liga
+    league = team.league
+    if timezone.now() > (league.created_at + timedelta(days=1)):
+        return Response({'detail': 'It is too late to make changes to this league. The deadline has passed.'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+    
+    player_id = request.data.get('player_id')
+    try:
+        player = Player.objects.get(player_id=player_id)
+    except Player.DoesNotExist:
+        return Response({'detail': 'Player not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    message = team.add_player_to_team(player)
+    return Response({'detail': message})
+
+# Remover jogador da equipa
+@api_view(['POST'])
+def remove_player_from_team(request, team_id):
+    try:
+        team = Team.objects.get(team_id=team_id)
+    except Team.DoesNotExist:
+        return Response({'detail': 'Team not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    player_id = request.data.get('player_id')
+    try:
+        player = Player.objects.get(player_id=player_id)
+    except Player.DoesNotExist:
+        return Response({'detail': 'Player not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    message = team.remove_player_from_team(player)
+    return Response({'detail': message})
+
+@api_view(['GET'])
+def list_players_in_team(request, team_id):
+    try:
+        team = Team.objects.get(team_id=team_id)
+    except Team.DoesNotExist:
+        return Response({'detail': 'Team not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Obter os jogadores associados à equipa através das seleções
+    players = team.player_selections.all()
+    
+    # Formatar dados para enviar como resposta, incluindo os pontos de fantasia
+    player_data = [{
+        'player_name': selection.player.name,
+        'player_team': selection.player.team,
+        'fantasy_points': selection.player.calculate_fantasy_points()  # Calculando os pontos de fantasia
+    } for selection in players]
+    
+    return Response(player_data)
+
+################ PLAYERS
+# Criar um novo jogador
+@api_view(['POST'])
+def create_player(request):
+    if request.method == 'POST':
+        serializer = PlayerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Visualizar um jogador (por ID)
+@api_view(['GET'])
+def get_player(request, player_id):
+    try:
+        player = Player.objects.get(player_id=player_id)
+    except Player.DoesNotExist:
+        return Response({'detail': 'Player not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = PlayerSerializer(player)
+    return Response(serializer.data)
+
+################## PLAYER SELECTIONS
+@api_view(['GET'])
+def get_player_selections(request, team_id):
+    selections = PlayerSelection.objects.filter(team__team_id=team_id)
+    serializer = PlayerSelectionSerializer(selections, many=True)
+    return Response(serializer.data)

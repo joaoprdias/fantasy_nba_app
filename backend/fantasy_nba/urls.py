@@ -20,10 +20,25 @@ from core import views
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/login/', views.login_view, name='login'),
-    path('api/logout/', views.logout_view, name='logout'),
-    path('api/register/', views.register, name='register'),
-    path('', views.home, name='home'),  # Página inicial (raiz)
-    path('api/players/', views.list_players, name='list_players'),
+    # User Authentication
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('register/', views.register, name='register'),
+
+    # League
+    path('league/create/', views.create_league, name='create_league'),
+    path('league/<int:league_id>/leaderboard/<int:year>/<int:week_number>/', views.get_league_leaderboard, name='get_league_weekly_leaderboard'),
+
+    # Team
+    path('team/create/', views.create_team, name='create_team'),
+    path('team/<int:team_id>/add_player/', views.add_player_to_team, name='add_player_to_team'),
+    path('team/<int:team_id>/remove_player/', views.remove_player_from_team, name='remove_player_from_team'),
+    path('team/<int:team_id>/players/', views.list_players_in_team, name='list_players_in_team'),
+
+    # Player
+    path('player/create/', views.create_player, name='create_player'),
+    path('player/<int:player_id>/', views.get_player, name='get_player'),
+
+    # Player Selections
+    path('team/<int:team_id>/player_selections/', views.get_player_selections, name='get_player_selections'),
 ]
