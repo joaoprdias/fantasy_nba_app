@@ -16,7 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from core import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/login/', views.login_view, name='login'),
+    path('api/logout/', views.logout_view, name='logout'),
+    path('api/register/', views.register, name='register'),
+    path('', views.home, name='home'),  # Página inicial (raiz)
+    path('api/players/', views.list_players, name='list_players'),
 ]
