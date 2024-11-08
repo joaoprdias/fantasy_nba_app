@@ -1,0 +1,166 @@
+/* Garante que a HomePage ocupe exatamente a altura da tela */
+.home-page {
+    position: relative;
+    text-align: center;
+    color: white;
+    height: 100vh; /* Ocupa a altura total da tela */
+    overflow: hidden; /* Evita o scroll */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribui o conteúdo */
+}
+
+/* Remove margens do body para evitar scroll */
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Ajusta o footer para remover a margem e garantir que ele fique no final da página */
+.footer {
+    margin-top: 0;
+    padding: 20px 0; /* Define padding ao invés de margem */
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Vídeo de fundo */
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1; /* Garante que o vídeo fique atrás do conteúdo */
+}
+
+/* Cabeçalho */
+.header {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.header h1 {
+    font-size: 3rem;
+}
+
+.header p {
+    font-size: 1.2rem;
+}
+
+/* Seção Sobre */
+.about-section {
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo semitransparente */
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Links das opções */
+.options {
+    margin-top: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.options ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.options li {
+    margin: 10px 0;
+}
+
+.link-button {
+    display: inline-block;
+    background-color: #f57c00;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.link-button:hover {
+    background-color: #e65100;
+    transform: translateY(-5px);
+}
+
+/* Botão de som */
+.mute-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    background-color: #f57c00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.mute-button:hover {
+    background-color: #e65100;
+}
+
+.cta-section {
+    display: flex;
+    flex-direction: column;  /* Organiza os botões na vertical */
+    align-items: center;     /* Centraliza os botões */
+    justify-content: center; /* Centraliza os botões na tela */
+    height: 100vh;           /* Ocupa toda a altura da página */
+  }
+
+.cta-button {
+    background-color: #f57c00;
+    color: white;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 8px 0; 
+    transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #e65100;
+}
+
+.nba-logo {
+    width: 200px; /* Ajuste o tamanho conforme necessário */
+    margin-bottom: -20px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .header {
+        padding: 20px;
+    }
+
+    .link-button {
+        font-size: 1rem;
+        padding: 10px 15px;
+    }
+    
+    .cta-button {
+        font-size: 1rem;
+        padding: 12px 25px;
+    }
+
+    .slick-slide img {
+        width: 100%;
+        max-height: 300px;
+    }   
+}

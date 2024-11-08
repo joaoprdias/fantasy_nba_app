@@ -28,16 +28,19 @@ urlpatterns = [
     # League
     path('league/create/', views.create_league, name='create_league'),
     path('league/<int:league_id>/leaderboard/<int:year>/<int:week_number>/', views.get_league_leaderboard, name='get_league_weekly_leaderboard'),
+    path('leagues/', views.list_leagues, name='list_leagues'),
 
     # Team
     path('team/create/', views.create_team, name='create_team'),
     path('team/<int:team_id>/add_player/', views.add_player_to_team, name='add_player_to_team'),
     path('team/<int:team_id>/remove_player/', views.remove_player_from_team, name='remove_player_from_team'),
     path('team/<int:team_id>/players/', views.list_players_in_team, name='list_players_in_team'),
+    path('team/<int:team_id>/players-and-points/', views.list_players_and_team_points, name='team_players_and_points'),
 
     # Player
     path('player/create/', views.create_player, name='create_player'),
     path('player/<int:player_id>/', views.get_player, name='get_player'),
+    path('players/search/', views.search_players, name='search_players'),
 
     # Player Selections
     path('team/<int:team_id>/player_selections/', views.get_player_selections, name='get_player_selections'),
