@@ -96,6 +96,13 @@ function RegisterTeam() {
       alert("Este jogador já foi adicionado!");
       return;
     }
+
+    // Verificar se já foram selecionados 5 jogadores (máx.)
+    if (selectedPlayers.length >= 5) {
+      alert("Só é possível selecionar até 5 jogadores.");
+      return;
+    }
+
     setSelectedPlayers((prev) => [...prev, player]);
   };
 
