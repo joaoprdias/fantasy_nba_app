@@ -73,7 +73,7 @@ body {
 
 .details-button:hover,
 .register-button:hover {
-  background-color: #0056b3;
+  background-color: #0a0b0b;
 }
 
 .details-button:focus,
@@ -82,11 +82,11 @@ body {
 }
 
 .details-button {
-  background-color: #28a745; /* Verde para o botão de Leaderboard */
+  background-color: #e67e22; /* Verde para o botão de Leaderboard */
 }
 
 .register-button {
-  background-color: #ffc107; /* Amarelo para o botão de registro de equipes */
+  background-color: #343232; /* Amarelo para o botão de registro de equipes */
 }
 
 /* Efeito de hover na caixa de liga */
@@ -100,3 +100,75 @@ body {
   color: white;
   margin-top: 20px;
 }
+
+/* Botão para criar nova liga na página Leagues */
+.create-league-button-container {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.create-league-button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  background-color: #2d2f2d; /* Verde para destacar a ação */ 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.create-league-button:hover {
+  background-color: #e67e22; /* Tom mais escuro quando hover */
+}
+
+/* Estilo para a lista de ligas com scroll */
+.leagues-list {
+  max-height: 500px; /* Altura máxima definida */
+  overflow-y: auto; /* Ativa a rolagem quando necessário */
+  width: 100%;
+  padding: 0 20px; /* Adiciona um espaçamento nas laterais */
+  display: flex;
+  flex-wrap: wrap; /* Permite que os itens fiquem em várias linhas */
+  gap: 20px; /* Espaço entre os cartões */
+  justify-content: center; /* Centraliza os itens */
+  margin-top: 20px;
+}
+
+/* Estilo de cada cartão de liga */
+.league-card {
+  background-color: rgba(0, 0, 0, 0.7); /* Fundo preto com transparência */
+  color: white; /* Texto branco */
+  border-radius: 8px;
+  padding: 10px; /* Diminuído o padding */
+  width: 40%; /* Cartões ligeiramente menores, dois por linha */
+  max-width: 250px; /* Largura máxima de cada cartão */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Sombra leve para os cartões */
+  transition: box-shadow 0.3s ease, margin-top 0.3s ease; /* Transição suave no efeito de hover */
+  margin-top: 20px; /* Margem superior maior */
+}
+
+.league-card:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4); /* Sombra mais intensa ao passar o mouse */
+  margin-top: 30px; /* Aumenta a margem superior para evitar cortar a imagem */
+}
+
+/* Estilo da barra de rolagem (personalizada e discreta) */
+.leagues-list::-webkit-scrollbar {
+  width: 8px; /* Largura fina */
+  background-color: transparent; /* Barra de rolagem invisível */
+}
+
+.leagues-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Cor discreta do thumb */
+  border-radius: 10px;
+}
+
+.leagues-list::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4); /* Escurece ao passar o mouse */
+}
+
+.leagues-list::-webkit-scrollbar-track {
+  background-color: transparent; /* Sem fundo para o track */
+}
+

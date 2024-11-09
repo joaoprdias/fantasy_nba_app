@@ -28,7 +28,7 @@ urlpatterns = [
 
     # League
     path('league/create/', views.create_league, name='create_league'),
-    path('league/<int:league_id>/leaderboard/<int:year>/<int:week_number>/', views.get_league_leaderboard, name='get_league_weekly_leaderboard'),
+    path('league/<int:league_id>/leaderboard/', views.get_league_leaderboard, name='get_league_weekly_leaderboard'),
     path('leagues/', views.list_leagues, name='list_leagues'),
 
     # Team

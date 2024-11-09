@@ -20,11 +20,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
 
-
-# Home simples
-def home(request):
-    return HttpResponse("Bem-vindo à página inicial!")
-
 ###################### USERS
 # login / logout / register
 class LoginView(APIView):
@@ -79,9 +74,10 @@ def create_league(request):
 
 # Obter a classificação de uma liga
 @api_view(['GET'])
-def get_league_leaderboard(request, league_id, year, week_number):
+def get_league_leaderboard(request, league_id):
     try:
         league = League.objects.get(league_id=league_id)
+        print(league.league_name)
     except League.DoesNotExist:
         return Response({'detail': 'League not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -91,12 +87,14 @@ def get_league_leaderboard(request, league_id, year, week_number):
     for team in league.teams.all():
         team_points = 0
         
-        # Para cada jogador da equipa, calcular os pontos baseados nos jogos da semana
+        # Para cada jogador da equipa, calcular os pontos baseados nos jogos da semana (soma so os jogos dps da liga ter sido aberta)
         for player_selection in team.player_selections.all():
             player = player_selection.player
-            # Verifica se o jogo ocorreu na semana solicitada
-            if player.date.isocalendar()[1] == week_number and player.date.year == year:
-                team_points += player.calculate_fantasy_points()
+            
+            if player.date >= league.created_at.date():
+                print(f"Jogador: {player.name}, Data de Seleção: {player.date}, Pontuação: {player.calculate_fantasy_points()}")
+                team_points += player.calculate_fantasy_points()  # Soma os pontos do jogador ao total da equipe
+
         
         leaderboard.append({'team_name': team.team_name, 'points': team_points})
 
@@ -111,7 +109,6 @@ def get_team_by_name_and_league(request, league_id, team_name):
     return Response(serializer.data)
 
 ##################### EQUIPAS
-# Criar uma nova equipa
 @api_view(['GET'])
 def list_leagues(request):
     leagues = League.objects.all()

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // Para capturar o parâmetro da URL
-import { createTeam, searchPlayers, addPlayerToTeam, removePlayerFromTeam, fetchTeamId } from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; 
+import { createTeam, searchPlayers, addPlayerToTeam, fetchTeamId } from '../services/api';
+import './RegisterTeam.css'
 
 function RegisterTeam() {
   const { league_id } = useParams(); // Captura o league_id da URL
@@ -67,29 +67,42 @@ function RegisterTeam() {
     setSearchQuery(event.target.value);
     if (event.target.value.trim() !== '') {
       try {
-        const result = await searchPlayers(event.target.value); // Pesquisa jogadores pela query
-        setPlayers(result); // Atualiza os jogadores encontrados
+        const result = await searchPlayers(event.target.value);
+  
+        // Filtrando jogadores para exibir apenas um por nome
+        const uniquePlayers = [];
+        const seenNames = new Set();
+  
+        result.forEach((player) => {
+          if (!seenNames.has(player.name)) {
+            uniquePlayers.push(player);
+            seenNames.add(player.name);  // Marca o nome como já visto
+          }
+        });
+  
+        setPlayers(uniquePlayers);
       } catch (error) {
         console.error("Erro ao buscar jogadores:", error);
       }
     } else {
-      setPlayers([]); // Limpa os resultados se a pesquisa estiver vazia
+      setPlayers([]);
     }
   };
 
   // Função para adicionar jogador à lista de seleções
   const handleSelectPlayer = (player) => {
-    const isPlayerAlreadySelected = selectedPlayers.some((p) => p.id === player.id);
+    // Verificar se o jogador já foi selecionado pelo nome
+    const isPlayerAlreadySelected = selectedPlayers.some((p) => p.name === player.name);
     if (isPlayerAlreadySelected) {
       alert("Este jogador já foi adicionado!");
       return;
     }
-    setSelectedPlayers((prev) => [...prev, player]); // Adiciona o jogador à lista de seleções
+    setSelectedPlayers((prev) => [...prev, player]);
   };
 
   // Função para remover jogador da lista de seleções
   const handleRemovePlayer = (player) => {
-    setSelectedPlayers((prev) => prev.filter((p) => p.id !== player.id)); // Remove da lista de seleções
+    setSelectedPlayers((prev) => prev.filter((p) => p.name !== player.name));
   };
 
   // Função para submeter todos os jogadores selecionados
@@ -130,29 +143,24 @@ function RegisterTeam() {
   };
 
   return (
-    <div>
+    <div className="register-team-container">
       <h1>Registrar Equipe</h1>
 
-      {/* Entrada para o nome da equipe */}
       {!team ? (
-        <div>
+        <div className="team-form">
           <input
             type="text"
             placeholder="Digite o nome da equipe"
             value={teamName}
-            onChange={(e) => setTeamName(e.target.value)} // Atualiza o nome da equipe
+            onChange={(e) => setTeamName(e.target.value)}
           />
-
-          {/* O ID da liga agora é capturado da URL (sem a necessidade de inseri-lo manualmente) */}
-          <p>ID da Liga: {league_id}</p> {/* Exibe o ID da liga para confirmação */}
-
+          <p>ID da Liga: {league_id}</p>
           <button onClick={handleCreateTeam}>Criar Equipe</button>
         </div>
       ) : (
-        <div>
-          <h2>Equipe: {team.team_name}</h2> {/* Exibe o nome da equipe criada */}
+        <div className="team-details">
+          <h2>Equipe: {team.team_name}</h2>
 
-          {/* Campo de busca para os jogadores */}
           <input
             type="text"
             value={searchQuery}
@@ -160,8 +168,7 @@ function RegisterTeam() {
             placeholder="Pesquisar jogadores..."
           />
 
-          {/* Lista de jogadores encontrados */}
-          <div>
+          <div className="players-list">
             {players.length > 0 ? (
               <ul>
                 {players.map((player) => (
@@ -176,8 +183,7 @@ function RegisterTeam() {
             )}
           </div>
 
-          {/* Lista de jogadores selecionados */}
-          <div>
+          <div className="selected-players-list">
             <h2>Jogadores Selecionados:</h2>
             <ul>
               {selectedPlayers.map((player) => (
@@ -189,8 +195,7 @@ function RegisterTeam() {
             </ul>
           </div>
 
-          {/* Botão de submeter as seleções */}
-          <button onClick={handleSubmitSelections}>Submeter Seleções</button>
+          <button className="submit-button" onClick={handleSubmitSelections}>Submeter Seleções</button>
         </div>
       )}
     </div>

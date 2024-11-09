@@ -24,6 +24,14 @@ function Leagues() {
   return (
     <div className="app-container">
       <h1 className="page-title">Ligas Disponíveis</h1>
+
+      {/* Botão para criar uma nova liga */}
+      <div className="create-league-button-container">
+        <Link to="/create-league">
+          <button className="create-league-button">Criar Nova Liga</button>
+        </Link>
+      </div>
+      
       <div className="leagues-list">
         {leagues.map((league) => (
           <div key={league.league_id} className="league-card">
@@ -35,7 +43,6 @@ function Leagues() {
                 <button className="details-button">LEADERBOARD</button>
               </Link>
 
-              {/* Alterado: Link para o registro da equipe, passando o league_id */}
               <Link to={`/league/${league.league_id}/register-team`}>
                 <button className="register-button">REGISTAR EQUIPA</button>
               </Link>

@@ -1,0 +1,113 @@
+/* Estilos aplicados ao corpo da página */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Garante que a altura cubra toda a janela */
+    background-image: url('/public/images/full-shot-man-playing-basketball.jpg'); /* Caminho correto da imagem */
+    background-size: cover; /* Faz a imagem cobrir a tela */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Impede a repetição */
+    background-attachment: fixed; /* Mantém a imagem fixa */
+}
+
+/* Estilos aplicados ao contêiner de pesquisa */
+.player-search-container {
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(41, 41, 41); /* Fundo opaco */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 90%; /* Para responsividade */
+    text-align: center;
+    margin: 50px auto; /* Centraliza o contêiner horizontalmente */
+    position: relative; /* Mantém o contêiner na posição estática */
+    z-index: 1; /* Garante que o contêiner fique acima de outros elementos */
+}
+  
+  /* Caixa de input de pesquisa */
+  .player-search-container input {
+    width: 80%;  /* Reduz um pouco a largura para dar mais margem */
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  
+  /* Botão de busca */
+  .player-search-container button {
+    width: 80%;  /* Centraliza e mantém o tamanho adequado */
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Estilo para o botão quando o mouse passa por cima */
+  .player-search-container button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Lista de jogadores encontrados */
+  .player-search-container ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10;
+    display: flex;
+    flex-direction: column;  /* Organiza os itens da lista em coluna */
+    align-items: center; /* Centraliza os itens */
+  }
+  
+  /* Cada item da lista de jogadores */
+  .player-search-container li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #ffffff;
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    width: 80%;  /* Diminui a largura do item da lista */
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Hover para os itens da lista */
+  .player-search-container li:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* Estilo para o nome do jogador */
+  .player-search-container li span.player-name {
+    color: #000000; /* Nome do jogador em preto */
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  /* Botão de selecionar jogador */
+  .player-search-container li button {
+    padding: 4px 8px;  /* Botão menor */
+    background-color:rgb(46, 46, 46);
+    color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 300px; /* Largura fixa para garantir uniformidade */
+    height: 30px; /* Altura fixa para garantir uniformidade */
+    transition: background-color 0.3s ease;
+    font-size: 14px; /* Tamanho do texto do botão */
+    margin-left: 10px;  /* Espaço entre o nome e o botão */
+  }
+  
+  /* Hover para o botão de selecionar */
+  .player-search-container li button:hover {
+    background-color: #474747;
+  }
+  

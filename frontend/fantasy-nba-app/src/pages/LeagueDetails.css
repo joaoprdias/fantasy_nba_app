@@ -1,0 +1,67 @@
+/* Container principal */
+.app-container {
+  background-image: url('/public/images/full-shot-man-playing-basketball.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  text-align: center;
+  padding: 50px 20px;
+}
+
+/* Contêiner da tabela */
+.leaderboard-table-container {
+  max-height: 400px;  /* Defina o valor de altura que você deseja */
+  overflow-y: auto;   /* Ativa o scroll vertical */
+  border: 1px solid #ccc;  /* Adiciona uma borda para demarcar o limite */
+  border-radius: 5px;  /* Adiciona bordas arredondadas */
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse; /* Remove espaços entre as células */
+}
+
+.leaderboard-table th, .leaderboard-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd; /* Adiciona bordas entre as linhas */
+}
+
+.leaderboard-table th {
+  position: sticky;    /* Fixa o cabeçalho */
+  top: 0;              /* Define o topo como 0 para fixar no topo da tabela */
+  background-color: #171515;  /* Cor de fundo para o cabeçalho */
+  z-index: 1;          /* Garante que o cabeçalho fique acima do conteúdo */
+}
+
+.leaderboard-table tr {
+  background-color: rgba(0, 0, 0, 0.7); /* Linhas com fundo escuro e transparência */
+}
+
+.leaderboard-table tr:hover {
+  background-color: rgba(190, 160, 82, 0.85); /* Efeito hover para as linhas */
+}
+
+.leaderboard-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Bordas sutis */
+}
+
+.back-button-container {
+  margin-top: 20px;
+}
+
+.back-button {
+  background-color: #e67e22;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #814c1e;
+}

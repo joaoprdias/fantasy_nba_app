@@ -1,0 +1,153 @@
+/* Container principal */
+.register-team-container {
+    background-image: url('/public/images/full-shot-man-playing-basketball.jpg'); /* Imagem de fundo */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 50px 20px;
+    color: #fff; /* Texto branco */
+  }
+  
+  /* Título principal */
+  .register-team-container h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Sombra para destacar o título */
+  }
+  
+  /* Formulário para criar equipe */
+  .team-form {
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo escuro semi-transparente */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7); /* Sombra suave */
+    width: 90%;
+    max-width: 500px;
+    margin-bottom: 30px;
+  }
+  
+  /* Inputs do formulário */
+  .team-form input[type="text"] {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1); /* Fundo transparente */
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  /* Botão de criar equipe */
+  .team-form button {
+    background-color: #f39c12; /* Cor dourada */
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  
+  .team-form button:hover {
+    background-color: #e67e22; /* Cor dourada mais escura ao passar o mouse */
+  }
+  
+  /* Se a equipe já foi criada, exibe as informações da equipe */
+  .team-details {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    width: 90%;
+    max-width: 500px;
+    margin-top: 30px;
+  }
+  
+  .team-details h2 {
+    font-size: 30px;
+    margin-bottom: 20px;
+  }
+  
+  /* Lista de jogadores encontrados */
+  .players-list {
+    margin-bottom: 30px;
+  }
+  
+  .players-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .players-list li {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  
+  .players-list button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .players-list button:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Lista de jogadores selecionados */
+  .selected-players-list {
+    margin-bottom: 30px;
+  }
+  
+  .selected-players-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .selected-players-list li {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  
+  .selected-players-list button {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .selected-players-list button:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Botão de submeter seleções */
+  .submit-button {
+    background-color: #f39c12;
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  
+  .submit-button:hover {
+    background-color: #e67e22;
+  }

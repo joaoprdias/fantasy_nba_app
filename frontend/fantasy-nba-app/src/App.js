@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';  // Importa a nova HomePage
 import './App.css';
 import { fetchLeagues } from './services/api';  // Função para buscar ligas
 import Header from './pages/Header';
+import CreateLeague from './pages/CreateLeague';
 
 
 function App() {
@@ -57,6 +58,13 @@ function App() {
             />
           }
         />
+
+        {/* Criar nova liga */}
+        <Route
+          path="/create-league"
+          element={<CreateLeague />}
+        />
+
       </Routes>
     </Router>
   );

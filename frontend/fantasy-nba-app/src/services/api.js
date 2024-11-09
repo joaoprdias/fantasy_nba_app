@@ -19,9 +19,9 @@ export const fetchLeagues = async () => {
 };
 
 // Função para obter a leaderboard de uma liga específica
-export const fetchLeaderboard = async (league_id, year, week_number) => {
+export const fetchLeaderboard = async (league_id) => {
   try {
-    const response = await api.get(`/league/${league_id}/leaderboard/${year}/${week_number}/`);
+    const response = await api.get(`/league/${league_id}/leaderboard/`);
     return response.data;
   } catch (error) {
     console.error("Erro ao carregar a leaderboard:", error);
@@ -161,6 +161,15 @@ export const fetchTeamId = async (leagueId, teamName) => {
   } catch (error) {
     console.error('Erro ao buscar equipe:', error);
     alert('Erro ao buscar equipe. Tente novamente.');
+  }
+};
+
+export const createLeague = async (leagueData) => {
+  try {
+    const response = await api.post('/league/create/', leagueData);
+    return response.data;  // Retorna os dados da liga criada
+  } catch (error) {
+    throw new Error('Erro ao criar a liga: ' + error.message);
   }
 };
 

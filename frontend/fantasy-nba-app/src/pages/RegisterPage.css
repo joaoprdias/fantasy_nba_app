@@ -37,7 +37,7 @@
 .register-page button {
     padding: 10px;
     font-size: 1rem;
-    background-color: #007bff;
+    background-color: #e67e22;
     color: white;
     border: none;
     border-radius: 5px;
@@ -45,7 +45,7 @@
 }
 
 .register-page button:hover {
-    background-color: #0056b3;
+    background-color: #e67e22;
 }
 
 .register-page .login-link {

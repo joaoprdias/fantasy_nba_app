@@ -9,7 +9,6 @@ class League(models.Model):
     league_id = models.AutoField(primary_key=True)
     league_name = models.CharField(max_length=255)
     description = models.TextField()
-    is_private = models.BooleanField(default=True)  # Indica se a liga é privada ou pública
     created_at = models.DateTimeField(auto_now_add=True)
 
     def get_leaderboard(self):

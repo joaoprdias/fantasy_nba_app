@@ -1,5 +1,5 @@
-/* LoginPage.css */
-.login-page {
+/* CreateLeague.css */
+.create-league-page {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,29 +7,29 @@
     height: 100vh;
 }
 
-.login-page h2 {
+.create-league-page h2 {
     font-size: 2rem;
     margin-bottom: 20px;
 }
 
-.login-page form {
+.create-league-page form {
     display: flex;
     flex-direction: column;
     width: 300px;
 }
 
-.login-page form div {
+.create-league-page form div {
     margin-bottom: 15px;
 }
 
-.login-page input {
+.create-league-page input {
     padding: 10px;
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
-.login-page button {
+.create-league-page button {
     padding: 10px;
     font-size: 1rem;
     background-color: #e67e22;
@@ -39,6 +39,23 @@
     cursor: pointer;
 }
 
-.login-page button:hover {
+.create-league-page button:hover {
     background-color: #e67e22;
+}
+
+.error-message {
+    color: #f44336;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.checkbox-group label {
+    margin-right: 10px;
 }
