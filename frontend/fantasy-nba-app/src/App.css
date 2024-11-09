@@ -101,25 +101,35 @@ body {
   margin-top: 20px;
 }
 
-/* Botão para criar nova liga na página Leagues */
-.create-league-button-container {
-  margin-bottom: 20px;
+/* Container para os botões criados */
+.button-container {
   display: flex;
   justify-content: center;
+  gap: 20px; /* Espaço entre os botões */
+  margin-bottom: 20px;
 }
 
+/* Estilos dos botões */
+.stats-button,
 .create-league-button {
   padding: 12px 20px;
   font-size: 1rem;
-  background-color: #2d2f2d; /* Verde para destacar a ação */ 
+  background-color: #565759; /* Cor de fundo */
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
+.stats-button:hover,
 .create-league-button:hover {
-  background-color: #e67e22; /* Tom mais escuro quando hover */
+  background-color: #e67e22; /* Tom mais escuro no hover */
+}
+
+.stats-button:focus,
+.create-league-button:focus {
+  outline: none; /* Remove o outline no foco */
 }
 
 /* Estilo para a lista de ligas com scroll */
@@ -172,3 +182,22 @@ body {
   background-color: transparent; /* Sem fundo para o track */
 }
 
+.logout-button {
+  padding: 10px 20px;
+  background-color: #565759; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #e67e22; /* Cor azul mais escura no hover */
+  transform: scale(1.05); /* Efeito de aumento do botão */
+}
+
+.logout-button:focus {
+  outline: none; /* Remove a borda de foco */
+}

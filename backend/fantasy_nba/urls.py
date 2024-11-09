@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from core import views
-from core.views import LoginView
+from core.views import LoginView, WeeklyStatsView
 
 app_name = 'djreapp'
 urlpatterns = [
@@ -43,7 +43,8 @@ urlpatterns = [
     path('player/create/', views.create_player, name='create_player'),
     path('player/<int:player_id>/', views.get_player, name='get_player'),
     path('players/search/', views.search_players, name='search_players'),
+    path('players/<int:player_id>/stats/', WeeklyStatsView.as_view(), name='get_player_stats'),
 
     # Player Selections
-    path('team/<int:team_id>/player_selections/', views.get_player_selections, name='get_player_selections'),
+    path('team/<int:team_id>/player_selections/', views.get_player_selections, name='get_player_selections')
 ]

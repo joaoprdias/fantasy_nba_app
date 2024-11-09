@@ -1,72 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Leagues from './pages/Leagues';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'; // Importa as rotas
+import Leagues from './pages/Leagues'; // Importa páginas da aplicação
 import LeagueDetails from './pages/LeagueDetails';
 import RegisterTeam from './pages/RegisterTeam';
-import LoginPage from './pages/LoginPage';  // Página de login
-import RegisterPage from './pages/RegisterPage';  // Página de registro
-import HomePage from './pages/HomePage';  // Importa a nova HomePage
-import './App.css';
-import { fetchLeagues } from './services/api';  // Função para buscar ligas
-import Header from './pages/Header';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import HomePage from './pages/HomePage';
 import CreateLeague from './pages/CreateLeague';
-
+import WelcomePage from './pages/WelcomePage';
+import PlayerStats from './pages/PlayerStats';
+import './App.css';
+import { fetchLeagues } from './services/api';
 
 function App() {
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
-  const [teamId, setTeamId] = useState(1);  // ID da equipe, ajustar conforme necessário
-  const [leagues, setLeagues] = useState([]);  // Estado para armazenar as ligas
+  const [selectedPlayers, setSelectedPlayers] = useState([]); // Estado para os jogadores selecionados
+  const [teamId, setTeamId] = useState(1); // Estado para o ID do time
+  const [leagues, setLeagues] = useState([]); // Estado para as ligas
 
   useEffect(() => {
     const loadLeagues = async () => {
       const fetchedLeagues = await fetchLeagues();
-      setLeagues(fetchedLeagues);  // Atualiza o estado com as ligas
+      setLeagues(fetchedLeagues);
     };
     loadLeagues();
   }, []);
 
+  const location = useLocation(); // Pega a localização atual da rota
+  const navigate = useNavigate(); // Hook para navegar entre páginas
+
+  // Definir se está em uma página de autenticação
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/welcome' || location.pathname === '/';
+
+  // Função de logout
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
-    <Router>
-      <Header /> {/* Exibe o cabeçalho em todas as páginas */}
+    <div>
+      {/* Exibe o botão de logout apenas se não estiver em uma página de autenticação */}
+      {!isAuthPage && (
+        <div style={{ position: 'fixed', top: 10, right: 10 }}>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      )}
+
       <Routes>
-        {/* Página principal que lista as ligas */}
-        <Route path="/" element={<HomePage />} />  {/* A página inicial é HomePage */}
-
-        {/* Página de login */}
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Página de registro */}
         <Route path="/register" element={<RegisterPage />} />
-
-        {/* Página de registro */}
         <Route path="/leagues" element={<Leagues />} />
-
-        {/* Detalhes da liga e leaderboard */}
-        <Route
-          path="/league/:league_id/leaderboard/:year/:week_number"
-          element={<LeagueDetails />}
-        />
-
-        {/* Registro de equipe para uma liga */}
+        <Route path="/welcome" element={<WelcomePage />} />
+        <Route path="/league/:league_id/leaderboard/:year/:week_number" element={<LeagueDetails />} />
         <Route
           path="/league/:league_id/register-team"
-          element={
-            <RegisterTeam
-              selectedPlayers={selectedPlayers}
-              setSelectedPlayers={setSelectedPlayers}
-              teamId={teamId}
-            />
-          }
+          element={<RegisterTeam selectedPlayers={selectedPlayers} setSelectedPlayers={setSelectedPlayers} teamId={teamId} />}
         />
-
-        {/* Criar nova liga */}
-        <Route
-          path="/create-league"
-          element={<CreateLeague />}
-        />
-
+        <Route path="/players/:playerId/stats" element={<PlayerStats />} />
+        <Route path="/create-league" element={<CreateLeague />} />
       </Routes>
-    </Router>
+    </div>
   );
 }
 

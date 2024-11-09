@@ -110,17 +110,31 @@ export const register = async (username, password, email) => {
   }
 };
 
-// Função para obter as equipas do utilizador com os jogadores e seus pontos de fantasy
-export const fetchUserTeams = async () => {
-  try {
-    const response = await api.get('/user/teams/');
-    return response.data;  // Retorna os dados das equipas com jogadores e pontos de fantasy
-  } catch (error) {
-    console.error('Erro ao carregar as equipas do utilizador:', error);
-    throw error;  // Lança o erro para ser tratado em outro lugar
+// Função para obter as equipas do utilizador
+export const fetchUserTeams = async (token) => {
+  if (!token) {
+    throw new Error('Autenticação necessária. Faça o login novamente.');
   }
+
+  const response = await fetch('http://127.0.0.1:8000/user/teams/', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,  // Adiciona o token no cabeçalho
+      'Content-Type': 'application/json',  // Define o tipo de conteúdo como JSON
+    },
+  });
+
+  const data = await response.json();  // Pega a resposta JSON
+
+  if (!response.ok) {
+    // Se a resposta não for ok, lança um erro com a mensagem retornada do backend
+    throw new Error(data.detail || 'Erro ao carregar as equipas do utilizador');
+  }
+
+  return data;  // Retorna os dados das equipas
 };
 
+// Função para criar equipas
 export const createTeam = async (league_id, teamName, token) => {
   if (!token) {
     throw new Error('Autenticação necessária. Faça o login novamente.');
@@ -172,5 +186,34 @@ export const createLeague = async (leagueData) => {
     throw new Error('Erro ao criar a liga: ' + error.message);
   }
 };
+
+
+// Função para buscar as estatísticas de um jogador
+export const getPlayerStats = async (playerId, startDate, endDate) => {
+  // Divide as datas no formato esperado pela API
+  const startDateArr = startDate.split('-');
+  const endDateArr = endDate.split('-');
+
+  try {
+    // Realiza a requisição GET para o endpoint do jogador
+    const response = await api.get(`/players/${playerId}/stats/`, {
+      params: {
+        start_year: startDateArr[0],
+        start_month: startDateArr[1],
+        start_day: startDateArr[2],
+        end_year: endDateArr[0],
+        end_month: endDateArr[1],
+        end_day: endDateArr[2],
+      },
+    });
+
+    // Retorna os dados da resposta (estatísticas)
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar estatísticas:', error);
+    throw error; // Lança o erro para ser tratado no componente
+  }
+};
+
 
 export { api };

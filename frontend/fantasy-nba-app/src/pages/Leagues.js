@@ -25,11 +25,16 @@ function Leagues() {
     <div className="app-container">
       <h1 className="page-title">Ligas Disponíveis</h1>
 
+      <div className="button-container">
       {/* Botão para criar uma nova liga */}
-      <div className="create-league-button-container">
-        <Link to="/create-league">
-          <button className="create-league-button">Criar Nova Liga</button>
-        </Link>
+      <Link to="/create-league">
+        <button className="create-league-button">Criar Nova Liga</button>
+      </Link>
+
+      {/* Botão para aceder às stats dos jogadores */}
+      <Link to="/players/:playerId/stats">
+        <button className="stats-button">Estatísticas do Jogadores</button>
+      </Link>
       </div>
       
       <div className="leagues-list">
@@ -40,11 +45,11 @@ function Leagues() {
             <div>
               {/* Link para o Leaderboard da liga, usando o league_id */}
               <Link to={`/league/${league.league_id}/leaderboard/2024/1`}>
-                <button className="details-button">LEADERBOARD</button>
+                <button className="details-button">Leaderboard</button>
               </Link>
 
               <Link to={`/league/${league.league_id}/register-team`}>
-                <button className="register-button">REGISTAR EQUIPA</button>
+                <button className="register-button">Registar Equipa</button>
               </Link>
             </div>
           </div>

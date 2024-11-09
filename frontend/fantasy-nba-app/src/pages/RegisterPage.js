@@ -16,6 +16,7 @@ const RegisterPage = () => {
     try {
       const response = await register(username, password, email);
       console.log('Registro bem-sucedido:', response);
+      alert("Registo efetuado com sucesso. Lets ball!");
       navigate('/login');  // Redireciona para a página de login após o registro
     } catch (error) {
       console.error('Erro ao registrar usuário:', error);

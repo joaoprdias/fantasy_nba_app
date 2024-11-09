@@ -15,9 +15,10 @@ from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from django.db.models import Avg
+from datetime import datetime
 
 
 ###################### USERS
@@ -311,6 +312,48 @@ def search_players(request):
     # Formata a resposta com os jogadores encontrados
     players_list = [{'id': player.player_id, 'name': player.name} for player in players]  # Alterado para 'player_id'
     return Response(players_list)
+
+class WeeklyStatsView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Acessando player_id de self.kwargs
+        player_id = kwargs['player_id']
+        
+        # Obtendo o jogador pelo ID
+        player = get_object_or_404(Player, player_id=player_id)
+
+        # Obtendo os parâmetros de data da query string
+        start_year = request.GET.get('start_year')
+        start_month = request.GET.get('start_month')
+        start_day = request.GET.get('start_day')
+        end_year = request.GET.get('end_year')
+        end_month = request.GET.get('end_month')
+        end_day = request.GET.get('end_day')
+
+        # Validando e criando as datas de início e fim
+        try:
+            start_date = datetime(int(start_year), int(start_month), int(start_day)).date()
+            end_date = datetime(int(end_year), int(end_month), int(end_day)).date()
+        except ValueError:
+            return Response({"error": "Invalid date values."}, status=400)
+
+        # Filtrando as estatísticas do jogador no intervalo de datas fornecido
+        stats = Player.objects.filter(
+            name=player.name,
+            date__gte=start_date,
+            date__lte=end_date
+        )
+
+        if not stats.exists():
+            return Response({"error": "No data found for this player in the given date range."}, status=404)
+
+        # Calculando as médias das estatísticas
+        avg_stats = stats.aggregate(
+            avg_points=Avg('ppg'),
+            avg_rebounds=Avg('rpg'),
+            avg_assists=Avg('apg')
+        )
+
+        return Response(avg_stats, status=200)
 
 ################## PLAYER SELECTIONS
 @api_view(['GET'])

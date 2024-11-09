@@ -30,7 +30,7 @@ const LoginPage = () => {
         // Se o login for bem-sucedido, armazena o token
         localStorage.setItem('token', data.token);
         console.log('Login bem-sucedido:', data.token);
-        navigate('/leagues'); // Redireciona para a página de ligas
+        navigate('/welcome'); 
       } else {
         // Se houver um erro, mostra a mensagem de erro
         setErrorMessage(data.error || 'Credenciais inválidas');

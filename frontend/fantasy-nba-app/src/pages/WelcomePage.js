@@ -20,8 +20,8 @@ const WelcomePage = () => {
     <div className="welcome-page">
       {/* Caixa de texto com sobreposição escura */}
       <div className="content">
-        <h1>Bem-vindo à plataforma da NBA!</h1>
-        <p>Você se registrou com sucesso. Em breve será redirecionado para as ligas...</p>
+        <h1>Bem-vindo à ISCTE Fantasy Hoops!</h1>
+        <p>Aguarde um momento. Estamos a preparar as Ligas para si...</p>
 
         {/* Barra de carregamento */}
         <div className="loading-bar-container">
