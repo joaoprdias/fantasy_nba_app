@@ -22,8 +22,8 @@ def import_players():
         reader = csv.DictReader(file)  # Assume que a primeira linha do CSV é o cabeçalho
         
         for row in reader:
-            # Para cada linha no CSV, cria ou atualiza o modelo Player
-            player, created = Player.objects.create(
+            # Para cada linha no CSV, cria o modelo Player
+            player = Player.objects.create(
                 name=row['Player'],  # A chave 'Player' deve corresponder à coluna no CSV
                 team=row['Tm'],
                 ppg=row['PTS'],
@@ -31,7 +31,7 @@ def import_players():
                 apg=row['AST'],
                 date=row['Date']
             )
-            print(f"{'Criado' if created else 'Atualizado'}: {player.name}")
+            print(f"'Criado': {player.name}")
 
 # Executa a função de importação
 if __name__ == "__main__":

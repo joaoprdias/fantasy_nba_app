@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; // Para capturar o parâmetro da URL
 import { createTeam, searchPlayers, addPlayerToTeam, removePlayerFromTeam, fetchTeamId } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 function RegisterTeam() {
   const { league_id } = useParams(); // Captura o league_id da URL
@@ -12,6 +13,8 @@ function RegisterTeam() {
   const [user, setUser] = useState(null); // Armazena os dados do usuário
   const [loading, setLoading] = useState(false);  // Estado de carregamento
   const [error, setError] = useState(null);  // Estado para exibir mensagens de erro
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user')); // Recupera os dados do usuário da localStorage
@@ -117,6 +120,9 @@ function RegisterTeam() {
 
       alert("Jogadores adicionados com sucesso!");
       setSelectedPlayers([]); // Limpa a lista após a submissão
+
+      navigate('/leagues');
+
     } catch (error) {
       console.error("Erro ao adicionar jogadores:", error);
       alert("Erro ao adicionar jogadores. Tente novamente.");
