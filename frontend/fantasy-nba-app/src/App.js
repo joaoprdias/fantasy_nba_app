@@ -10,6 +10,7 @@ import './App.css';
 import { fetchLeagues } from './services/api';  // Função para buscar ligas
 import Header from './pages/Header';
 
+
 function App() {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [teamId, setTeamId] = useState(1);  // ID da equipe, ajustar conforme necessário

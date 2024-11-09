@@ -4,7 +4,7 @@ const BASE_URL = 'http://127.0.0.1:8000';
 
 // Instância do axios com URL base configurada
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_URL
 });
 
 // Função para listar as ligas
@@ -54,15 +54,34 @@ export const getTeamPlayers = async (teamId) => {
   }
 };
 
-// Função para adicionar jogador à equipe
-export const addPlayerToTeam = async (teamId, playerIds) => {
+export const addPlayerToTeam = async (teamId, playerIds, token) => {
   try {
-    const response = await api.post(`/team/${teamId}/add_player/`, {
-      player_ids: playerIds  // Envia a lista de IDs dos jogadores
+    // Imprimir os dados para depuração
+    console.log("Team ID na requisição:", teamId);
+    console.log("Player IDs na requisição:", playerIds);
+    console.log("Token na requisição:", token);
+
+    const response = await fetch(`http://localhost:8000/team/add_players/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Adiciona o token de autenticação
+      },
+      body: JSON.stringify({ team_id: teamId,
+                            player_ids: playerIds,
+       })
     });
-    return response.data;
+
+    // Verificar a resposta da API
+    if (!response.ok) {
+      throw new Error(`Erro: ${response.statusText}`);
+    }
+
+    const data = await response.json(); // Espera JSON na resposta
+    console.log("Resposta da API:", data); // Imprime a resposta da API
+    return data;
   } catch (error) {
-    console.error('Erro ao adicionar jogador à equipe:', error.response || error);
+    console.error("Erro ao adicionar jogador à equipe:", error);
     throw error;
   }
 };
@@ -77,28 +96,6 @@ export const removePlayerFromTeam = async (teamId, playerId) => {
   } catch (error) {
     console.error('Erro ao remover jogador da equipe:', error);
     throw error;
-  }
-};
-
-// Função de login
-export const login = async (username, password) => {
-  try {
-    const response = await api.post('/login/', { username, password });
-    return response.data;  // Retorna a resposta, geralmente uma mensagem de sucesso
-  } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    throw error;  // Lança o erro para ser tratado em outro lugar
-  }
-};
-
-// Função de logout
-export const logout = async () => {
-  try {
-    const response = await api.post('/logout/');
-    return response.data;  // Retorna a resposta de sucesso do logout
-  } catch (error) {
-    console.error('Erro ao fazer logout:', error);
-    throw error;  // Lança o erro para ser tratado em outro lugar
   }
 };
 
@@ -124,23 +121,47 @@ export const fetchUserTeams = async () => {
   }
 };
 
-export const createTeam = async (userId, leagueId, teamName) => {
+export const createTeam = async (league_id, teamName, token) => {
+  if (!token) {
+    throw new Error('Autenticação necessária. Faça o login novamente.');
+  }
+
+  const response = await fetch('http://127.0.0.1:8000/team/create/', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`, // Adiciona o token no cabeçalho
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      league_id,  // ID da liga
+      team_name: teamName,  // Nome da equipe
+    }),
+  });
+
+  const data = await response.json(); // Pega a resposta JSON
+
+  if (!response.ok) {
+    // Se a resposta não for ok, lança um erro com a mensagem retornada do backend
+    throw new Error(data.detail || 'Erro ao criar equipe');
+  }
+
+  return data; // Retorna os dados da nova equipe criada
+};
+
+// Função para buscar a equipe pelo nome e ID da liga
+export const fetchTeamId = async (leagueId, teamName) => {
   try {
-    console.log("Enviando user_id:", userId);  // Log para verificar se o user_id está correto
-
-    const response = await api.post('/team/create/', {
-      user_id: userId,  // ID do usuário
-      league_id: leagueId,  // ID da liga
-      team_name: teamName  // Nome da equipe
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Erro ao criar equipe:', error);
-    if (error.response) {
-      console.error('Detalhes do erro:', error.response.data);
-      throw new Error(error.response.data.detail || 'Erro desconhecido');
+    const response = await fetch(`http://localhost:8000/team/${leagueId}/${teamName}/`);
+    if (!response.ok) {
+      throw new Error('Equipe não encontrada.');
     }
-    throw error;
+    const data = await response.json();
+    console.log('Equipe encontrada:', data);
+    return data.team_id; // Retorna o ID da equipe
+  } catch (error) {
+    console.error('Erro ao buscar equipe:', error);
+    alert('Erro ao buscar equipe. Tente novamente.');
   }
 };
+
+export { api };

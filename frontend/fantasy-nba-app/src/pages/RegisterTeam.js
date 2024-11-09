@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';  // Para capturar o parâmetro da URL
-import { createTeam, searchPlayers, addPlayerToTeam, removePlayerFromTeam, getTeamPlayers } from '../services/api';
+import { useParams } from 'react-router-dom'; // Para capturar o parâmetro da URL
+import { createTeam, searchPlayers, addPlayerToTeam, removePlayerFromTeam, fetchTeamId } from '../services/api';
 
 function RegisterTeam() {
   const { league_id } = useParams(); // Captura o league_id da URL
@@ -9,10 +9,20 @@ function RegisterTeam() {
   const [players, setPlayers] = useState([]); // Lista de jogadores encontrados na pesquisa
   const [selectedPlayers, setSelectedPlayers] = useState([]); // Jogadores na equipe
   const [searchQuery, setSearchQuery] = useState(''); // Termo de pesquisa
-  const userId = localStorage.getItem('user_id');
-  
+  const [user, setUser] = useState(null); // Armazena os dados do usuário
+  const [loading, setLoading] = useState(false);  // Estado de carregamento
+  const [error, setError] = useState(null);  // Estado para exibir mensagens de erro
 
-  // Função para criar uma nova equipe
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user')); // Recupera os dados do usuário da localStorage
+    if (userData) {
+      setUser(userData); // Se o usuário estiver logado, salva os dados no estado
+    } else {
+      setError('Você precisa estar logado para criar uma equipe.');
+    }
+  }, []);
+
+  // Função para criar a equipe
   const handleCreateTeam = async () => {
     if (!teamName.trim()) {
       alert("Digite um nome para a equipe.");
@@ -24,77 +34,92 @@ function RegisterTeam() {
       return;
     }
 
+    setLoading(true); // Inicia o carregamento
+    setError(null); // Limpa mensagens de erro
+
     try {
-      const newTeam = await createTeam(userId, league_id, teamName);  // Passa o ID da liga e o userId
+      // Recuperar o token do localStorage
+      const token = localStorage.getItem('token');
+      
+      // Verificar se o token existe
+      if (!token) {
+        alert('Você precisa estar logado.');
+        return;
+      }
+
+      // Realizar a criação da equipe com o token no cabeçalho
+      const newTeam = await createTeam(league_id, teamName, token); // Passa o token junto na requisição
       setTeam(newTeam); // Define a nova equipe como a equipe atual
       alert("Equipe criada com sucesso!");
     } catch (error) {
       console.error("Erro ao criar equipe:", error);
-      alert("Erro ao criar equipe. Verifique se a URL base está correta no serviço API.");
+      setError("Erro ao criar equipe. Verifique se a URL base está correta no serviço API.");
+    } finally {
+      setLoading(false); // Finaliza o carregamento
     }
   };
-
-  // Carrega os jogadores da equipe criada
-  useEffect(() => {
-    if (team) {
-      const loadTeamPlayers = async () => {
-        try {
-          const players = await getTeamPlayers(team.id);  // Obtém jogadores da equipe criada
-          setSelectedPlayers(players);  // Atualiza os jogadores selecionados
-        } catch (error) {
-          console.error("Erro ao carregar jogadores da equipe:", error);
-        }
-      };
-      loadTeamPlayers();
-    }
-  }, [team]);
 
   // Função de busca de jogadores com base no termo de pesquisa
   const handleSearchChange = async (event) => {
     setSearchQuery(event.target.value);
     if (event.target.value.trim() !== '') {
       try {
-        const result = await searchPlayers(event.target.value);  // Pesquisa jogadores pela query
-        setPlayers(result);  // Atualiza os jogadores encontrados
+        const result = await searchPlayers(event.target.value); // Pesquisa jogadores pela query
+        setPlayers(result); // Atualiza os jogadores encontrados
       } catch (error) {
         console.error("Erro ao buscar jogadores:", error);
       }
     } else {
-      setPlayers([]);  // Limpa os resultados se a pesquisa estiver vazia
+      setPlayers([]); // Limpa os resultados se a pesquisa estiver vazia
     }
   };
 
-  // Função para adicionar jogador à equipe
-  const handleSelectPlayer = async (player) => {
-    if (!team) {
-      alert("Crie uma equipe antes de adicionar jogadores.");
-      return;
-    }
-
+  // Função para adicionar jogador à lista de seleções
+  const handleSelectPlayer = (player) => {
     const isPlayerAlreadySelected = selectedPlayers.some((p) => p.id === player.id);
     if (isPlayerAlreadySelected) {
       alert("Este jogador já foi adicionado!");
       return;
     }
-
-    try {
-      await addPlayerToTeam(team.id, [player.id]);  // Adiciona jogador à equipe
-      setSelectedPlayers((prev) => [...prev, player]);  // Atualiza os jogadores selecionados
-    } catch (error) {
-      console.error("Erro ao adicionar jogador à equipe:", error);
-      alert("Erro ao adicionar jogador. Tente novamente.");
-    }
+    setSelectedPlayers((prev) => [...prev, player]); // Adiciona o jogador à lista de seleções
   };
 
-  // Função para remover jogador da equipe
-  const handleRemovePlayer = async (player) => {
-    if (!team) return;
+  // Função para remover jogador da lista de seleções
+  const handleRemovePlayer = (player) => {
+    setSelectedPlayers((prev) => prev.filter((p) => p.id !== player.id)); // Remove da lista de seleções
+  };
+
+  // Função para submeter todos os jogadores selecionados
+  const handleSubmitSelections = async () => {
+    if (!team) {
+      alert("Crie uma equipe antes de submeter as seleções.");
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Você precisa estar logado.');
+      return;
+    }
+
     try {
-      await removePlayerFromTeam(team.id, player.id);  // Remove jogador da equipe
-      setSelectedPlayers((prev) => prev.filter((p) => p.id !== player.id));  // Atualiza os jogadores selecionados
+      // Obtém o team_id a partir do nome da equipe e do league_id
+      const teamId = await fetchTeamId(league_id, team.team_name);
+
+      // Imprimir os dados dos jogadores selecionados antes de enviar
+      console.log("Jogadores selecionados para envio:", selectedPlayers);
+
+      // Obter todos os IDs dos jogadores selecionados
+      const playerIds = selectedPlayers.map((player) => player.id);
+
+      // Fazer uma única requisição POST para adicionar todos os jogadores à equipe
+      await addPlayerToTeam(teamId, playerIds, token);
+
+      alert("Jogadores adicionados com sucesso!");
+      setSelectedPlayers([]); // Limpa a lista após a submissão
     } catch (error) {
-      console.error("Erro ao remover jogador da equipe:", error);
-      alert("Erro ao remover jogador. Tente novamente.");
+      console.error("Erro ao adicionar jogadores:", error);
+      alert("Erro ao adicionar jogadores. Tente novamente.");
     }
   };
 
@@ -109,7 +134,7 @@ function RegisterTeam() {
             type="text"
             placeholder="Digite o nome da equipe"
             value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}  // Atualiza o nome da equipe
+            onChange={(e) => setTeamName(e.target.value)} // Atualiza o nome da equipe
           />
 
           {/* O ID da liga agora é capturado da URL (sem a necessidade de inseri-lo manualmente) */}
@@ -119,7 +144,7 @@ function RegisterTeam() {
         </div>
       ) : (
         <div>
-          <h2>Equipe: {team.team_name}</h2>  {/* Exibe o nome da equipe criada */}
+          <h2>Equipe: {team.team_name}</h2> {/* Exibe o nome da equipe criada */}
 
           {/* Campo de busca para os jogadores */}
           <input
@@ -157,6 +182,9 @@ function RegisterTeam() {
               ))}
             </ul>
           </div>
+
+          {/* Botão de submeter as seleções */}
+          <button onClick={handleSubmitSelections}>Submeter Seleções</button>
         </div>
       )}
     </div>
@@ -164,5 +192,3 @@ function RegisterTeam() {
 }
 
 export default RegisterTeam;
-
-
