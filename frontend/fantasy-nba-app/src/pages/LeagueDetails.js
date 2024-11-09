@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchLeaderboard } from '../services/api';  // Importa a função
+import { fetchLeaderboard } from '../services/api';  
 import './LeagueDetails.css'
 
 const LeagueDetails = () => {
-  const { league_id } = useParams();  // Obtém o id da liga da URL
+  const { league_id } = useParams();  
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); 
@@ -13,7 +13,7 @@ const LeagueDetails = () => {
   useEffect(() => {
     const loadLeaderboard = async () => {
       try {
-        const leaderboardData = await fetchLeaderboard(league_id);  // Carrega a leaderboard
+        const leaderboardData = await fetchLeaderboard(league_id);  
         setLeaderboard(leaderboardData);
         setLoading(false);
       } catch (error) {
@@ -30,8 +30,6 @@ const LeagueDetails = () => {
 return (
     <div className="app-container">
       <h2>Leaderboard da Liga</h2>
-
-      {/* Contêiner da tabela centralizada */}
       <div className="leaderboard-table-container">
         <table className="leaderboard-table">
           <thead>

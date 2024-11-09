@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Para navegação após criação
-import { createLeague } from '../services/api'; // Importa a função de criação da liga
+import { useNavigate } from 'react-router-dom'; 
+import { createLeague } from '../services/api'; 
 import './CreateLeague.css';
 
 function CreateLeague() {
@@ -12,7 +12,6 @@ function CreateLeague() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validação simples
     if (!leagueName || !description) {
       setError('Todos os campos são obrigatórios');
       return;

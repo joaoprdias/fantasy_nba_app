@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../services/api';  // Função de registro
-import './RegisterPage.css';  // Estilo CSS para registro
+import { register } from '../services/api';  
+import './RegisterPage.css'; 
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate();  // Navegação após o registro
+  const navigate = useNavigate();  
 
   const handleRegister = async (event) => {
     event.preventDefault();
 
     try {
       const response = await register(username, password, email);
-      console.log('Registro bem-sucedido:', response);
+      console.log('Registo bem-sucedido:', response);
       alert("Registo efetuado com sucesso. Lets ball!");
-      navigate('/login');  // Redireciona para a página de login após o registro
+      navigate('/login');  // Redireciona para a página de login após o registo
     } catch (error) {
-      console.error('Erro ao registrar usuário:', error);
-      setErrorMessage('Erro ao registrar. Tente novamente.');
+      console.error('Erro ao registar o user:', error);
+      setErrorMessage('Erro ao registar. Tente novamente.');
     }
   };
 
   return (
     <div className="register-page">
-      <h2>Registrar</h2>
+      <h2>Registar</h2>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
       <form onSubmit={handleRegister} className="register-form">
         <div className="input-group">
@@ -37,7 +37,7 @@ const RegisterPage = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            placeholder="Digite seu nome de usuário"
+            placeholder="Digite o nome do utilizador"
           />
         </div>
         <div className="input-group">
@@ -48,7 +48,7 @@ const RegisterPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="Digite seu email"
+            placeholder="Digite o seu email"
           />
         </div>
         <div className="input-group">
@@ -59,10 +59,10 @@ const RegisterPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            placeholder="Digite sua senha"
+            placeholder="Digite a sua password"
           />
         </div>
-        <button type="submit" className="submit-button">Registrar</button>
+        <button type="submit" className="submit-button">Registar</button>
       </form>
       <p className="login-link">
         Já tem uma conta? <a href="/login">Faça login aqui</a>

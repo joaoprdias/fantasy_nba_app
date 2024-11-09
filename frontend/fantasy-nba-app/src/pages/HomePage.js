@@ -19,14 +19,14 @@ const HomePage = () => {
 
       <header className="header">
         <img src="/images/nba-logo.png" alt="NBA Logo" className="nba-logo" />
-        <h1>NBA FANTASY</h1>
-        <p>READY TO START?</p>
+        <h1>ISCTE FANTASY HOOPS</h1>
+        <p>Preparado para começar?</p>
       </header>
 
-      {/* Botões de Login e Registro */}
+      {/* Botões de Login e Registo */}
       <section className="cta-section">
         <Link to="/login" className="cta-button">LOGIN</Link>
-        <Link to="/register" className="cta-button">REGISTER</Link>
+        <Link to="/register" className="cta-button">REGISTO</Link>
       </section>
 
       {/* Toggle Sound Button */}
@@ -35,7 +35,7 @@ const HomePage = () => {
       </button>
 
       <footer className="footer">
-        <p>&copy; 2024 NBA Fantasy</p>
+        <p>&copy; 2024 ISCTE Fantasy Hoops by João Dias (110305), David Franco (110733) & Felipe Pereira (110861)</p>
       </footer>
     </div>
   );

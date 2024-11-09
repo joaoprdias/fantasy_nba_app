@@ -22,7 +22,7 @@
 }
 
 .register-page label {
-    margin-bottom: 5px; /* Espaçamento entre o label e o input */
+    margin-bottom: 5px; 
     font-size: 1rem;
 }
 
@@ -31,7 +31,7 @@
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 100%;  /* Garante que o input ocupe toda a largura disponível */
+    width: 100%;  
 }
 
 .register-page button {

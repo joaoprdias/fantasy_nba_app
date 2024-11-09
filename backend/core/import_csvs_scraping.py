@@ -3,7 +3,7 @@ import os
 import django
 import sys
 
-# Defina o módulo de configurações do Django corretamente
+# Configurações e setup inicial 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fantasy_nba.settings")
 django.setup()
@@ -12,19 +12,18 @@ from core.models import Player
 
 # Função para importar os dados
 def import_players():
-    # Caminho para o arquivo CSV gerado após o scraping
+    # Caminho para o arquivo CSV gerado após o scraping (caso se altere o nome para outro diferente de "dailyleaders.csv" é preciso ajustar diretamente a variável csv_file_path)
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     csv_file_path = os.path.join(base_dir, 'scraping', 'dailyleaders.csv')
     
-    # Abra o arquivo CSV
     with open(csv_file_path, mode='r', encoding='utf-8') as file:
-        # Crie um leitor de CSV
+        # Criar um leitor de CSV
         reader = csv.DictReader(file)  # Assume que a primeira linha do CSV é o cabeçalho
         
         for row in reader:
             # Para cada linha no CSV, cria o modelo Player
             player = Player.objects.create(
-                name=row['Player'],  # A chave 'Player' deve corresponder à coluna no CSV
+                name=row['Player'],  
                 team=row['Tm'],
                 ppg=row['PTS'],
                 rpg=row['TRB'],
@@ -33,6 +32,5 @@ def import_players():
             )
             print(f"'Criado': {player.name}")
 
-# Executa a função de importação
 if __name__ == "__main__":
     import_players()

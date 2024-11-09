@@ -1,23 +1,19 @@
-/* WelcomePage.css */
-
-/* Centraliza o conteúdo da página */
 .welcome-page {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centraliza verticalmente */
-    align-items: center;     /* Centraliza horizontalmente */
-    height: 100vh;           /* Usa 100% da altura da janela de visualização */
-    color: #fff;             /* Texto branco */
-    text-align: center;      /* Alinha o texto ao centro */
+    justify-content: center; 
+    align-items: center;    
+    height: 100vh;           
+    color: #fff;             
+    text-align: center;     
     position: relative;
-    background-image: url('/public/images/nba-1.jpg');  /* Caminho correto da imagem */
-    background-size: cover;  /* Faz a imagem cobrir toda a tela */
-    background-position: center;  /* Centraliza a imagem */
-    background-repeat: no-repeat;  /* Evita repetição da imagem */
-    overflow: hidden; /* Garante que nada ultrapasse a tela */
+    background-image: url('/public/images/nba-1.jpg'); 
+    background-size: cover; 
+    background-position: center;  
+    background-repeat: no-repeat; 
+    overflow: hidden; 
   }
   
-  /* Caixa escura por trás do conteúdo de texto */
   .welcome-page::before {
     content: "";
     position: absolute;
@@ -25,50 +21,46 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);  /* Sobreposição escura com 60% de opacidade */
-    z-index: 1; /* Garante que a sobreposição fique abaixo do texto */
+    background: rgba(0, 0, 0, 0.6); 
+    z-index: 1; 
   }
   
-  /* Contêiner principal para o texto */
   .welcome-page .content {
-    z-index: 2;  /* Garante que o texto apareça acima da sobreposição */
+    z-index: 2;  
     position: relative;
-    padding: 20px; /* Espaçamento ao redor do conteúdo */
-    text-align: center;  /* Alinha o texto ao centro */
+    padding: 20px; 
+    text-align: center;  
   }
   
-  /* Estilo para o título */
   .welcome-page h1 {
-    font-size: 3rem;         /* Tamanho maior para o título */
-    font-weight: bold;       /* Deixa a fonte em negrito */
-    margin-bottom: 20px;     /* Espaçamento abaixo do título */
-    color: #ffcc00;          /* Cor do título em dourado, inspirado na NBA */
+    font-size: 3rem;         
+    font-weight: bold;       
+    margin-bottom: 20px;   
+    color: #ffcc00;         
   }
   
-  /* Estilo para o parágrafo */
   .welcome-page p {
-    font-size: 1.5rem;       /* Tamanho médio para o parágrafo */
-    color: #fff;             /* Cor do texto em branco */
-    max-width: 600px;        /* Limita a largura do parágrafo */
-    margin-bottom: 40px;     /* Espaçamento abaixo do parágrafo */
+    font-size: 1.5rem;       
+    color: #fff;           
+    max-width: 600px;       
+    margin-bottom: 40px;     
   }
   
-  /* Barra de loading centralizada abaixo do título */
   .loading-bar-container {
     position: relative;
-    width: 80%;              /* Largura da barra de carregamento */
-    background-color: #555;  /* Cor da base da barra */
-    height: 10px;            /* Altura da barra */
+    width: 80%;              
+    background-color: #555;  
+    height: 10px;            
     border-radius: 5px;
-    margin-top: 20px;        /* Espaçamento superior para separar do texto */
+    margin-top: 20px;       
   }
   
   .loading-bar {
     height: 100%;
     width: 0;
-    background-color: #ffcc00; /* Cor dourada da NBA */
+    background-color: #ffcc00; 
     border-radius: 5px;
-    animation: loading 5s linear infinite;  /* Animação da barra de carregamento */
+    animation: loading 5s linear infinite;  
   }
   
   @keyframes loading {

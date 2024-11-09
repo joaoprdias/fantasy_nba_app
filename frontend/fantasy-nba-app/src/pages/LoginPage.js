@@ -7,7 +7,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Hook de navegação para redirecionamento
+  const navigate = useNavigate(); 
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -15,7 +15,7 @@ const LoginPage = () => {
     setErrorMessage('');
 
     try {
-      // Fazendo a requisição para o backend Django
+      // Requisição para o backend Django
       const response = await fetch('http://localhost:8000/login/', {
         method: 'POST',
         headers: {
@@ -24,7 +24,7 @@ const LoginPage = () => {
         body: JSON.stringify({ username, password }), // Dados do login
       });
 
-      const data = await response.json(); // Pega a resposta JSON
+      const data = await response.json(); // Resposta JSON
 
       if (response.ok) {
         // Se o login for bem-sucedido, armazena o token
@@ -37,7 +37,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error('Erro ao fazer login:', error);
-      setErrorMessage('Erro no login. Verifique sua conexão ou tente mais tarde.');
+      setErrorMessage('Erro no login. Tente mais tarde.');
     } finally {
       setLoading(false); // Finaliza o carregamento
     }
@@ -75,7 +75,7 @@ const LoginPage = () => {
         </button>
       </form>
       <p className="signup-link">
-        Não tem uma conta? <a href="/register">Registre-se aqui</a>
+        Não tem uma conta? <a href="/register">Registe-se aqui</a>
       </p>
     </div>
   );

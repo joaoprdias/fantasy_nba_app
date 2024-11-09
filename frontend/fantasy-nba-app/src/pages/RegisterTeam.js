@@ -4,31 +4,30 @@ import { createTeam, searchPlayers, addPlayerToTeam, fetchTeamId } from '../serv
 import './RegisterTeam.css'
 
 function RegisterTeam() {
-  const { league_id } = useParams(); // Captura o league_id da URL
-  const [teamName, setTeamName] = useState(''); // Nome da nova equipe
-  const [team, setTeam] = useState(null); // Armazena a equipe criada
-  const [players, setPlayers] = useState([]); // Lista de jogadores encontrados na pesquisa
-  const [selectedPlayers, setSelectedPlayers] = useState([]); // Jogadores na equipe
-  const [searchQuery, setSearchQuery] = useState(''); // Termo de pesquisa
-  const [user, setUser] = useState(null); // Armazena os dados do usuário
-  const [loading, setLoading] = useState(false);  // Estado de carregamento
-  const [error, setError] = useState(null);  // Estado para exibir mensagens de erro
+  const { league_id } = useParams(); 
+  const [teamName, setTeamName] = useState(''); 
+  const [team, setTeam] = useState(null);
+  const [players, setPlayers] = useState([]); 
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [user, setUser] = useState(null); 
+  const [loading, setLoading] = useState(false);  
+  const [error, setError] = useState(null); 
   const navigate = useNavigate();
 
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user')); // Recupera os dados do usuário da localStorage
+    const userData = JSON.parse(localStorage.getItem('user')); // Recuperar os dados do utilizador da localStorage
     if (userData) {
-      setUser(userData); // Se o usuário estiver logado, salva os dados no estado
+      setUser(userData); // Se o utilizador estiver conectado, guarda os dados no estado
     } else {
-      setError('Você precisa estar logado para criar uma equipe.');
+      setError('Deve estar conectado para criar uma equipa.');
     }
   }, []);
 
-  // Função para criar a equipe
   const handleCreateTeam = async () => {
     if (!teamName.trim()) {
-      alert("Digite um nome para a equipe.");
+      alert("Digite um nome para a equipa.");
       return;
     }
 
@@ -37,8 +36,8 @@ function RegisterTeam() {
       return;
     }
 
-    setLoading(true); // Inicia o carregamento
-    setError(null); // Limpa mensagens de erro
+    setLoading(true); 
+    setError(null); 
 
     try {
       // Recuperar o token do localStorage
@@ -46,30 +45,30 @@ function RegisterTeam() {
       
       // Verificar se o token existe
       if (!token) {
-        alert('Você precisa estar logado.');
+        alert('Deve estar conectado.');
         return;
       }
 
-      // Realizar a criação da equipe com o token no cabeçalho
-      const newTeam = await createTeam(league_id, teamName, token); // Passa o token junto na requisição
-      setTeam(newTeam); // Define a nova equipe como a equipe atual
-      alert("Equipe criada com sucesso!");
+      // Realizar a criação da equipa com o token no cabeçalho
+      const newTeam = await createTeam(league_id, teamName, token); // Passa o token com o request
+      setTeam(newTeam); // Define a nova equipa como a equipa atual
+      alert("Equipa criada com sucesso!");
     } catch (error) {
-      console.error("Erro ao criar equipe:", error);
-      setError("Erro ao criar equipe. Verifique se a URL base está correta no serviço API.");
+      console.error("Erro ao criar a equipa:", error);
+      setError("Erro ao criar a equipa.");
     } finally {
-      setLoading(false); // Finaliza o carregamento
+      setLoading(false); 
     }
   };
 
-  // Função de busca de jogadores com base no termo de pesquisa
+  // Função de pesquisa de jogadores com base no termo de pesquisa
   const handleSearchChange = async (event) => {
     setSearchQuery(event.target.value);
     if (event.target.value.trim() !== '') {
       try {
         const result = await searchPlayers(event.target.value);
   
-        // Filtrando jogadores para exibir apenas um por nome
+        // Filtra jogadores para apresentar apenas um por nome
         const uniquePlayers = [];
         const seenNames = new Set();
   
@@ -100,7 +99,7 @@ function RegisterTeam() {
     setSelectedPlayers((prev) => [...prev, player]);
   };
 
-  // Função para remover jogador da lista de seleções
+  // Função para remover o jogador da lista de seleções
   const handleRemovePlayer = (player) => {
     setSelectedPlayers((prev) => prev.filter((p) => p.name !== player.name));
   };
@@ -108,27 +107,27 @@ function RegisterTeam() {
   // Função para submeter todos os jogadores selecionados
   const handleSubmitSelections = async () => {
     if (!team) {
-      alert("Crie uma equipe antes de submeter as seleções.");
+      alert("Crie uma equipa antes de submeter as seleções.");
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Você precisa estar logado.');
+      alert('Precisa de estar conectado.');
       return;
     }
 
     try {
-      // Obtém o team_id a partir do nome da equipe e do league_id
+      // Obtém o team_id a partir do nome da equipa e do league_id
       const teamId = await fetchTeamId(league_id, team.team_name);
 
-      // Imprimir os dados dos jogadores selecionados antes de enviar
+      // Imprimir os dados dos jogadores selecionados antes de enviar (para debugging)
       console.log("Jogadores selecionados para envio:", selectedPlayers);
 
       // Obter todos os IDs dos jogadores selecionados
       const playerIds = selectedPlayers.map((player) => player.id);
 
-      // Fazer uma única requisição POST para adicionar todos os jogadores à equipe
+      // Fazer um único POST request para adicionar todos os jogadores à equipa
       await addPlayerToTeam(teamId, playerIds, token);
 
       alert("Jogadores adicionados com sucesso!");
@@ -144,7 +143,7 @@ function RegisterTeam() {
 
   return (
     <div className="register-team-container">
-      <h1>Registrar Equipe</h1>
+      <h1>Registar Equipa</h1>
 
       {!team ? (
         <div className="team-form">
@@ -155,11 +154,11 @@ function RegisterTeam() {
             onChange={(e) => setTeamName(e.target.value)}
           />
           <p>ID da Liga: {league_id}</p>
-          <button onClick={handleCreateTeam}>Criar Equipe</button>
+          <button onClick={handleCreateTeam}>Criar Equipa</button>
         </div>
       ) : (
         <div className="team-details">
-          <h2>Equipe: {team.team_name}</h2>
+          <h2>Equipa: {team.team_name}</h2>
 
           <input
             type="text"

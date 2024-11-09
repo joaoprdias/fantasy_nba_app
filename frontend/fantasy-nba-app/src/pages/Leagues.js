@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'; // Para usar o Link do React Router
-import { fetchLeagues } from '../services/api'; // Certifique-se de que a função fetchLeagues está exportada corretamente
-import '../App.css'; // Importando o CSS global
+import { Link } from 'react-router-dom'; 
+import { fetchLeagues } from '../services/api'; 
+import '../App.css'; 
 
 function Leagues() {
   const [leagues, setLeagues] = useState([]);
@@ -43,7 +43,7 @@ function Leagues() {
             <h2>{league.league_name}</h2>
             <p>{league.description}</p>
             <div>
-              {/* Link para o Leaderboard da liga, usando o league_id */}
+              {/* Link para o Leaderboard da liga */}
               <Link to={`/league/${league.league_id}/leaderboard/2024/1`}>
                 <button className="details-button">Leaderboard</button>
               </Link>

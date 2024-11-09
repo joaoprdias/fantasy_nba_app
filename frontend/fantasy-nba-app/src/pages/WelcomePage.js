@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './WelcomePage.css';  // Certifique-se de importar o arquivo CSS
+import './WelcomePage.css';  
 
 const WelcomePage = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);  // Controle de carregamento
+  const [loading, setLoading] = useState(true);  
 
   useEffect(() => {
-    // Redireciona para a página de ligas após 5 segundos
     const timer = setTimeout(() => {
-      setLoading(false);  // Atualiza o estado de carregamento
-      navigate('/leagues');  // Redireciona para a página de ligas
+      setLoading(false);  
+      navigate('/leagues');  
     }, 5000);
 
-    return () => clearTimeout(timer);  // Limpa o timer caso o componente seja desmontado
+    return () => clearTimeout(timer);  
   }, [navigate]);
 
   return (
     <div className="welcome-page">
-      {/* Caixa de texto com sobreposição escura */}
       <div className="content">
         <h1>Bem-vindo à ISCTE Fantasy Hoops!</h1>
         <p>Aguarde um momento. Estamos a preparar as Ligas para si...</p>

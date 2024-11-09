@@ -10,37 +10,37 @@ const PlayerStats = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(''); // Texto de pesquisa
+  const [searchQuery, setSearchQuery] = useState(''); // "Texto de pesquisa"
   const navigate = useNavigate();
 
-  // Função de busca de jogadores com base no termo de pesquisa
+  // Função de procura de jogadores com base no termo de pesquisa
   const handleSearch = async (event) => {
     setSearchQuery(event.target.value);
     if (event.target.value.trim() !== '') {
       try {
         const result = await searchPlayers(event.target.value);
   
-        // Filtrando jogadores para exibir apenas um por nome
+        // Filtrar jogadores para apresentar apenas um por nome (existem varios registos do mesmo jogador, visto que joga em multiplos dias)
         const uniquePlayers = [];
         const seenNames = new Set();
   
         result.forEach((player) => {
           if (!seenNames.has(player.name)) {
             uniquePlayers.push(player);
-            seenNames.add(player.name);  // Marca o nome como já visto
+            seenNames.add(player.name);  // Marca o nome como "já visto"
           }
         });
   
         setPlayers(uniquePlayers);
       } catch (error) {
-        console.error("Erro ao buscar jogadores:", error);
+        console.error("Erro ao procurar pelos jogadores:", error);
       }
     } else {
       setPlayers([]);
     }
   };
 
-  // Função para pegar as estatísticas do jogador selecionado
+  // Função para guardar as estatísticas do jogador selecionado
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,10 +51,10 @@ const PlayerStats = () => {
 
     try {
       const data = await getPlayerStats(selectedPlayer.id, startDate, endDate);
-      setStats(data); // Define as estatísticas no estado
-      setError(null); // Limpa qualquer erro anterior
+      setStats(data); 
+      setError(null); 
     } catch (err) {
-      setError('Erro ao buscar as estatísticas. Tente novamente.');
+      setError('Erro na procura das estatísticas. Tente novamente.');
     }
   };
 
@@ -66,7 +66,7 @@ const PlayerStats = () => {
 
   return (
     <div className="player-stats-page">
-      <h1>Estatísticas Semanais do Jogador</h1>
+      <h1>Estatísticas do Jogador</h1>
 
       {/* Botão de Voltar às Ligas */}
       <button className="back-button" onClick={() => navigate('/leagues')}>
@@ -101,14 +101,14 @@ const PlayerStats = () => {
         )}
       </div>
 
-      {/* Exibição do jogador selecionado */}
+      {/* Apresenta o jogador selecionado */}
       {selectedPlayer && (
         <div className="selected-player">
           <h2>Jogador Selecionado: {selectedPlayer.name}</h2>
         </div>
       )}
 
-      {/* Formulário para selecionar as datas e buscar estatísticas */}
+      {/* Formulário para selecionar as datas e procurar estatísticas */}
       <form onSubmit={handleSubmit} className="stats-form">
         <div>
           <label>Data de Início:</label>
@@ -128,17 +128,17 @@ const PlayerStats = () => {
             className="date-input"
           />
         </div>
-        <button type="submit" className="submit-button">Buscar Estatísticas</button>
+        <button type="submit" className="submit-button">Procurar Estatísticas</button>
       </form>
 
       {error && <p className="error-message">{error}</p>}
 
-      {/* Exibir estatísticas do jogador */}
+      {/* Apresentar estatísticas do jogador */}
       {stats && (
         <div className="stats-display">
           <h3>Média de Estatísticas</h3>
           <p>Pontos Médios: {stats.avg_points}</p>
-          <p>Rebotes Médios: {stats.avg_rebounds}</p>
+          <p>Ressaltos Médios: {stats.avg_rebounds}</p>
           <p>Assistências Médias: {stats.avg_assists}</p>
         </div>
       )}

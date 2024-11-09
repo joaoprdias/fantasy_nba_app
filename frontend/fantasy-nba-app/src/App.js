@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'; // Importa as rotas
-import Leagues from './pages/Leagues'; // Importa páginas da aplicação
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'; 
+import Leagues from './pages/Leagues'; 
 import LeagueDetails from './pages/LeagueDetails';
 import RegisterTeam from './pages/RegisterTeam';
 import LoginPage from './pages/LoginPage';
@@ -13,9 +13,9 @@ import './App.css';
 import { fetchLeagues } from './services/api';
 
 function App() {
-  const [selectedPlayers, setSelectedPlayers] = useState([]); // Estado para os jogadores selecionados
-  const [teamId, setTeamId] = useState(1); // Estado para o ID do time
-  const [leagues, setLeagues] = useState([]); // Estado para as ligas
+  const [selectedPlayers, setSelectedPlayers] = useState([]); 
+  const [teamId, setTeamId] = useState(1); 
+  const [leagues, setLeagues] = useState([]); 
 
   useEffect(() => {
     const loadLeagues = async () => {
@@ -25,13 +25,11 @@ function App() {
     loadLeagues();
   }, []);
 
-  const location = useLocation(); // Pega a localização atual da rota
-  const navigate = useNavigate(); // Hook para navegar entre páginas
+  const location = useLocation(); 
+  const navigate = useNavigate(); 
 
-  // Definir se está em uma página de autenticação
   const isAuthPage = location.pathname === '/login' || location.pathname === '/welcome' || location.pathname === '/';
 
-  // Função de logout
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/');
@@ -39,7 +37,7 @@ function App() {
 
   return (
     <div>
-      {/* Exibe o botão de logout apenas se não estiver em uma página de autenticação */}
+      {/* Mostra o botão de logout apenas se não estiver numa página de autenticação */}
       {!isAuthPage && (
         <div style={{ position: 'fixed', top: 10, right: 10 }}>
           <button className="logout-button" onClick={handleLogout}>

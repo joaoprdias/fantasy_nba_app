@@ -37,12 +37,12 @@ class LoginView(APIView):
 @api_view(['POST'])
 def logout_view(request):
     logout(request)
-    return Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
+    return Response({"message": "Logged out efetuado com sucesso."}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def register(request):
     """
-    View para registar um novo usuário.
+    View para registar um novo user.
     """
     if request.method == 'POST':
         username = request.data.get('username')
@@ -51,16 +51,10 @@ def register(request):
 
         if username and password and email:
             user = get_user_model().objects.create_user(username=username, password=password, email=email)
-            return Response({"message": "User created successfully!"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Utilizador criado com sucesso!"}, status=status.HTTP_201_CREATED)
         else:
-            return Response({"message": "All fields are required!"}, status=status.HTTP_400_BAD_REQUEST)
-
-# para testar na interface gráfica do Django é preciso submeter os dados em formato json:
-# {
-#    "username": "admin",
-#    "password": "admin",
-#    "email": "admin@lcd.pt"
-#}
+            return Response({"message": "Todos os campos são necessários."}, status=status.HTTP_400_BAD_REQUEST)
+        
 
 ##################### LIGAS
 # Criar uma nova liga
@@ -80,7 +74,7 @@ def get_league_leaderboard(request, league_id):
         league = League.objects.get(league_id=league_id)
         print(league.league_name)
     except League.DoesNotExist:
-        return Response({'detail': 'League not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Liga não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
 
     leaderboard = []
     
@@ -92,9 +86,14 @@ def get_league_leaderboard(request, league_id):
         for player_selection in team.player_selections.all():
             player = player_selection.player
             
-            if player.date >= league.created_at.date():
-                print(f"Jogador: {player.name}, Data de Seleção: {player.date}, Pontuação: {player.calculate_fantasy_points()}")
-                team_points += player.calculate_fantasy_points()  # Soma os pontos do jogador ao total da equipe
+            # Verificar todas as entradas para esse jogador na tabela Player
+            player_entries = Player.objects.filter(name=player.name)  # Filtra todas as entradas do mesmo jogador pelo nome
+
+            for entry in player_entries:
+                # Verifica a data de cada entrada do jogador e calcula os pontos apenas se a data for válida
+                if entry.date >= league.created_at.date():
+                    print(f"Jogador: {entry.name}, Data de Seleção: {entry.date}, Pontuação: {entry.calculate_fantasy_points()}")
+                    team_points += entry.calculate_fantasy_points()
 
         
         leaderboard.append({'team_name': team.team_name, 'points': team_points})
@@ -126,7 +125,7 @@ def create_team(request):
         token = request.headers.get('Authorization')
         if token.startswith('Bearer '):
             token = token[7:]
-            # Aqui, recuperamos o token e o usuário associado a ele
+            # Aqui, recuperamos o token e o user associado a ele
             token_obj = Token.objects.get(key=token)
             print(token_obj.user)
             user = token_obj.user  
@@ -135,18 +134,18 @@ def create_team(request):
 
         # Verifica se os dados necessários estão presentes
         if not league_id or not team_name:
-            return Response({"detail": "Campos obrigatórios estão faltando."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Campos obrigatórios em falta."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Verifica se a liga existe, usando o campo league_id
+            # Verifica se a liga existe, com recurso ao campo league_id
             league = League.objects.get(league_id=league_id)
         except League.DoesNotExist:
             return Response({"detail": "Liga não encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Cria a nova equipe associada ao usuário autenticado
+        # Cria a nova equipa associada ao utilizador autenticado
         team = Team.objects.create(user=user, league=league, team_name=team_name)
 
-        # Retorna os dados da equipe criada
+        # Retorna os dados da equipa criada
         return Response({
             "id": team.team_id,
             "user_id": team.user.id,
@@ -160,7 +159,7 @@ def add_player_to_team(request):
     try:
         team_id = request.data.get('team_id')
         team = Team.objects.get(team_id =team_id)  
-        print(f"Equipe encontrada: {team.team_name}")  # Log para garantir que a equipe foi encontrada
+        print(f"Equipe encontrada: {team.team_name}")  # Log para garantir que a equipa foi encontrada
     except Team.DoesNotExist:
         return Response({'detail': 'Equipe não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
     
@@ -181,14 +180,14 @@ def add_player_to_team(request):
     # Itera sobre os IDs dos jogadores e tenta adicioná-los
     for player_id in player_ids:
         try:
-            player = Player.objects.get(player_id=player_id)  # Certifique-se de que está usando o ID correto
+            player = Player.objects.get(player_id=player_id)  
             print(f"Jogador encontrado: {player.name}")  # Log para garantir que o jogador foi encontrado
             
-            # Verifica se o jogador já foi selecionado para a equipe
+            # Verifica se o jogador já foi selecionado para a equipa
             if PlayerSelection.objects.filter(player=player, team=team).exists():
                 players_not_found.append(f'O jogador {player.name} já está na equipa.')
             else:
-                # Adiciona a seleção do jogador para a equipe
+                # Adiciona a seleção do jogador para a equipa
                 PlayerSelection.objects.create(player=player, team=team)
                 players_added.append(player.name)
                 print(f"Jogador {player.name} adicionado à equipa.")  # Log de adição
@@ -213,13 +212,13 @@ def remove_player_from_team(request, team_id):
     try:
         team = Team.objects.get(team_id=team_id)
     except Team.DoesNotExist:
-        return Response({'detail': 'Team not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Equipa não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
 
     player_id = request.data.get('player_id')
     try:
         player = Player.objects.get(player_id=player_id)
     except Player.DoesNotExist:
-        return Response({'detail': 'Player not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Jogador não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
     message = team.remove_player_from_team(player)
     return Response({'detail': message})
@@ -229,16 +228,16 @@ def list_players_in_team(request, team_id):
     try:
         team = Team.objects.get(team_id=team_id)
     except Team.DoesNotExist:
-        return Response({'detail': 'Team not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Equipa não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
     
     # Obter os jogadores associados à equipa através das seleções
     players = team.player_selections.all()
     
-    # Formatar dados para enviar como resposta, incluindo os pontos de fantasia
+    # Formatar os dados para enviar como resposta, incluindo os pontos de fantasy
     player_data = [{
         'player_name': selection.player.name,
         'player_team': selection.player.team,
-        'fantasy_points': selection.player.calculate_fantasy_points()  # Calculando os pontos de fantasia
+        'fantasy_points': selection.player.calculate_fantasy_points()  # Calcular os pontos de fantasy
     } for selection in players]
     
     return Response(player_data)
@@ -288,13 +287,13 @@ def create_player(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Visualizar um jogador (por ID)
+# Ver um jogador (por ID)
 @api_view(['GET'])
 def get_player(request, player_id):
     try:
         player = Player.objects.get(player_id=player_id)
     except Player.DoesNotExist:
-        return Response({'detail': 'Player not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Jogador não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
     
     serializer = PlayerSerializer(player)
     return Response(serializer.data)
@@ -304,24 +303,24 @@ def search_players(request):
     query = request.GET.get('query', '').strip()
     # Verifica se a pesquisa não está vazia
     if query:
-        # Busca insensível ao caso (case-insensitive)
+        # Pesquisa que não é case-sensitive
         players = Player.objects.filter(name__icontains=query)
     else:
-        players = Player.objects.none()  # Retorna uma lista vazia se a consulta estiver vazia    
+        players = Player.objects.none()  # Devolve uma lista vazia se a consulta estiver vazia    
 
     # Formata a resposta com os jogadores encontrados
-    players_list = [{'id': player.player_id, 'name': player.name} for player in players]  # Alterado para 'player_id'
+    players_list = [{'id': player.player_id, 'name': player.name} for player in players]  
     return Response(players_list)
 
 class WeeklyStatsView(APIView):
     def get(self, request, *args, **kwargs):
-        # Acessando player_id de self.kwargs
+        # Aceder ao player_id de self.kwargs
         player_id = kwargs['player_id']
         
-        # Obtendo o jogador pelo ID
+        # Obter o jogador pelo ID
         player = get_object_or_404(Player, player_id=player_id)
 
-        # Obtendo os parâmetros de data da query string
+        # Obter os parametros de data da query string
         start_year = request.GET.get('start_year')
         start_month = request.GET.get('start_month')
         start_day = request.GET.get('start_day')
@@ -329,14 +328,14 @@ class WeeklyStatsView(APIView):
         end_month = request.GET.get('end_month')
         end_day = request.GET.get('end_day')
 
-        # Validando e criando as datas de início e fim
+        # Validar e criar as datas de início e fim
         try:
             start_date = datetime(int(start_year), int(start_month), int(start_day)).date()
             end_date = datetime(int(end_year), int(end_month), int(end_day)).date()
         except ValueError:
-            return Response({"error": "Invalid date values."}, status=400)
+            return Response({"error": "Data não válidas."}, status=400)
 
-        # Filtrando as estatísticas do jogador no intervalo de datas fornecido
+        # Filtrar as estatísticas do jogador no intervalo de datas fornecido
         stats = Player.objects.filter(
             name=player.name,
             date__gte=start_date,
@@ -344,9 +343,9 @@ class WeeklyStatsView(APIView):
         )
 
         if not stats.exists():
-            return Response({"error": "No data found for this player in the given date range."}, status=404)
+            return Response({"error": "Sem dados do jogador no intervalo de tempo especificado."}, status=404)
 
-        # Calculando as médias das estatísticas
+        # Calcular as médias das estatísticas
         avg_stats = stats.aggregate(
             avg_points=Avg('ppg'),
             avg_rebounds=Avg('rpg'),
