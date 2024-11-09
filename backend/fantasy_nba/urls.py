@@ -17,11 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from core import views
+from core.views import LoginView
 
-
+app_name = 'djreapp'
 urlpatterns = [
     # User Authentication
-    path('login/', views.login_view, name='login'),
+    path('login/', LoginView.as_view(), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
 
@@ -32,10 +33,11 @@ urlpatterns = [
 
     # Team
     path('team/create/', views.create_team, name='create_team'),
-    path('team/<int:team_id>/add_player/', views.add_player_to_team, name='add_player_to_team'),
+    path('team/add_players/', views.add_player_to_team, name='add_player_to_team'),
     path('team/<int:team_id>/remove_player/', views.remove_player_from_team, name='remove_player_from_team'),
     path('team/<int:team_id>/players/', views.list_players_in_team, name='list_players_in_team'),
     path('team/<int:team_id>/players-and-points/', views.list_players_and_team_points, name='team_players_and_points'),
+    path('team/<int:league_id>/<str:team_name>/', views.get_team_by_name_and_league, name='get_team_by_name_and_league'),
 
     # Player
     path('player/create/', views.create_player, name='create_player'),

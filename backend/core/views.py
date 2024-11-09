@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.contrib.auth.models import User
@@ -10,6 +10,15 @@ from .models import Player, League, Team, PlayerSelection
 from .serializers import UserSerializer, LeagueSerializer, TeamSerializer, PlayerSerializer, PlayerSelectionSerializer
 from django.utils import timezone
 from datetime import timedelta
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate
+from django.http import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+
 
 
 # Home simples
@@ -18,27 +27,16 @@ def home(request):
 
 ###################### USERS
 # login / logout / register
-@api_view(['POST'])
-def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-    
-    # Autenticação do utilizador
-    user = authenticate(request, username=username, password=password)
-    
-    if user is not None:
-        login(request, user)
-        return Response({
-            "message": "Login realizado com sucesso",
-            "user": {
-                "id": user.id,
-                "username": user.username
-            }
-        }, status=status.HTTP_200_OK)
-    else:
-        return Response({
-            "error": "Credenciais inválidas"
-        }, status=status.HTTP_400_BAD_REQUEST)
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            token, _ = Token.objects.get_or_create(user=user)
+            return JsonResponse({'token': token.key})
+        else:
+            return JsonResponse({'error': 'Credenciais inválidas'},status=400)
         
 @api_view(['POST'])
 def logout_view(request):
@@ -106,6 +104,12 @@ def get_league_leaderboard(request, league_id, year, week_number):
     leaderboard = sorted(leaderboard, key=lambda x: x['points'], reverse=True)
     return Response(leaderboard)
 
+@api_view(['GET'])
+def get_team_by_name_and_league(request, league_id, team_name):
+    team = get_object_or_404(Team, league_id=league_id, team_name=team_name)
+    serializer = TeamSerializer(team)
+    return Response(serializer.data)
+
 ##################### EQUIPAS
 # Criar uma nova equipa
 @api_view(['GET'])
@@ -115,43 +119,50 @@ def list_leagues(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])  
 def create_team(request):
+    print("Dados recebidos:", request.data)  # Log dos dados recebidos
+    print("Token de autenticação:", request.headers.get('Authorization'))  # Log do token
+    
     if request.method == 'POST':
-        user_id = request.data.get('user_id')
-        league_id = request.data.get('league_id')
-        team_name = request.data.get('team_name')
+        token = request.headers.get('Authorization')
+        if token.startswith('Bearer '):
+            token = token[7:]
+            # Aqui, recuperamos o token e o usuário associado a ele
+            token_obj = Token.objects.get(key=token)
+            print(token_obj.user)
+            user = token_obj.user  
+            league_id = request.data.get('league_id')
+            team_name = request.data.get('team_name')
 
         # Verifica se os dados necessários estão presentes
-        if not user_id or not league_id or not team_name:
+        if not league_id or not team_name:
             return Response({"detail": "Campos obrigatórios estão faltando."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Verifica se o usuário e a liga existem
-            user = User.objects.get(id=user_id)
-            league = League.objects.get(id=league_id)
-        except (User.DoesNotExist, League.DoesNotExist):
-            return Response({"detail": "Usuário ou Liga não encontrados."}, status=status.HTTP_404_NOT_FOUND)
+            # Verifica se a liga existe, usando o campo league_id
+            league = League.objects.get(league_id=league_id)
+        except League.DoesNotExist:
+            return Response({"detail": "Liga não encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Cria a nova equipe
+        # Cria a nova equipe associada ao usuário autenticado
         team = Team.objects.create(user=user, league=league, team_name=team_name)
 
         # Retorna os dados da equipe criada
         return Response({
-            "id": team.id,
+            "id": team.team_id,
             "user_id": team.user.id,
-            "league_id": team.league.id,
+            "league_id": team.league.league_id,  # Atualizado para usar league_id
             "team_name": team.team_name
         }, status=status.HTTP_201_CREATED)
+
     
-# Adicionar jogador à equipa
 @api_view(['POST'])
-def add_player_to_team(request, team_id):
-    # Garantir que o usuário está autenticado
-    if not request.user.is_authenticated:
-        return Response({'detail': 'Autenticação necessária.'}, status=401)
-    
+def add_player_to_team(request):    
     try:
-        team = Team.objects.get(team_id=team_id)
+        team_id = request.data.get('team_id')
+        team = Team.objects.get(team_id =team_id)  
+        print(f"Equipe encontrada: {team.team_name}")  # Log para garantir que a equipe foi encontrada
     except Team.DoesNotExist:
         return Response({'detail': 'Equipe não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
     
@@ -172,16 +183,20 @@ def add_player_to_team(request, team_id):
     # Itera sobre os IDs dos jogadores e tenta adicioná-los
     for player_id in player_ids:
         try:
-            player = Player.objects.get(player_id=player_id)
-            # Verifica se o jogador já está na equipe
-            if player in team.players.all():
-                players_not_found.append(f'O jogador {player.name} já está na equipe.')
+            player = Player.objects.get(player_id=player_id)  # Certifique-se de que está usando o ID correto
+            print(f"Jogador encontrado: {player.name}")  # Log para garantir que o jogador foi encontrado
+            
+            # Verifica se o jogador já foi selecionado para a equipe
+            if PlayerSelection.objects.filter(player=player, team=team).exists():
+                players_not_found.append(f'O jogador {player.name} já está na equipa.')
             else:
-                team.players.add(player)
+                # Adiciona a seleção do jogador para a equipe
+                PlayerSelection.objects.create(player=player, team=team)
                 players_added.append(player.name)
+                print(f"Jogador {player.name} adicionado à equipa.")  # Log de adição
         except Player.DoesNotExist:
             players_not_found.append(f'O jogador com ID {player_id} não foi encontrado.')
-
+    
     # Mensagem de retorno com os jogadores que foram adicionados e os erros
     if players_added:
         message = f'Jogadores adicionados: {", ".join(players_added)}'
